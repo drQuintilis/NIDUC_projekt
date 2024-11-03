@@ -18,4 +18,5 @@ class GF256:
         }
 
         def wiel_generujacy(t):
-                #wielomian generujacy bedzie wynikiem mnozenia funkcji od m_1 do m_21
+            #wielomian generujacy bedzie wynikiem mnozenia funkcji od m_1 do m_21
+            return
