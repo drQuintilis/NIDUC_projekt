@@ -41,9 +41,10 @@ def write_to_excel(data, file_name):
     print(f"Tablica została zapisana do {file_name}")
 
 
-# Generowanie tabeli i zapis do Excela
-multiplication_table = create_gf_2_8_table(galois_multiply)
-addition_table = create_gf_2_8_table(galois_addition)
-write_to_excel(multiplication_table, "gf_2_8_tabliczka_mnozenia.xlsx")
-write_to_excel(addition_table, "gf_2_8_tabliczka_dodawania.xlsx")
+if __name__ == "__main__":
+    # Generowanie tabeli i zapis do Excela
+    multiplication_table = create_gf_2_8_table(galois_multiply)
+    addition_table = create_gf_2_8_table(galois_addition)
+    write_to_excel(multiplication_table, "gf_2_8_tabliczka_mnozenia.xlsx")
+    write_to_excel(addition_table, "gf_2_8_tabliczka_dodawania.xlsx")
 
