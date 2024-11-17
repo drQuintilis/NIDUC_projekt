@@ -89,7 +89,7 @@ class BCHCoder:
         """Encode the message using the BCH coding scheme."""
         if len(message) != self.n:
             raise ValueError(f"The message must be exactly {self.n} bits.")
-        x84_m = [0] * (self.n - self.k) + message
+        x84_m = message +[0] * (self.n - self.k)
         remainder = self.divide_polynomials(x84_m, self.generator_polynomial)
         codeword = x84_m
         for i in range(len(remainder)):
