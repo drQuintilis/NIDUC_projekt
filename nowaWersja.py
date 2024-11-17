@@ -1,4 +1,5 @@
 # Define the Galois Field GF(2^8) parameters
+import random
 primitive_polynomial = 0x11D  # x^8 + x^4 + x^3 + x^2 + 1
 
 # Generate addition and multiplication tables for GF(2^8)
@@ -52,7 +53,7 @@ class BCHCoder:
     def __init__(self, n, k):
         self.n = n
         self.k = k
-        self.t = (n - k) // 2
+        self.t = 11
         self.generator_polynomial = self.generate_generator_polynomial()
 
     def multiply_polynomials(self, poly1, poly2):
@@ -86,8 +87,8 @@ class BCHCoder:
 
     def encode(self, message):
         """Encode the message using the BCH coding scheme."""
-        if len(message) != self.k:
-            raise ValueError(f"The message must be exactly {self.k} bits.")
+        if len(message) != self.n:
+            raise ValueError(f"The message must be exactly {self.n} bits.")
         x84_m = [0] * (self.n - self.k) + message
         remainder = self.divide_polynomials(x84_m, self.generator_polynomial)
         codeword = x84_m
@@ -103,7 +104,8 @@ k = 171
 bch = BCHCoder(n, k)
 
 # Test the coder with a message
-message = [1] * k
+message =  [random.randint(0, 1) for _ in range(n)]
+print("Message:", message)
 encoded_message = bch.encode(message)
 
 print("Encoded message:", encoded_message)
