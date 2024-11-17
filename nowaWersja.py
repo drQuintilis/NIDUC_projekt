@@ -1,52 +1,25 @@
-# Define the Galois Field GF(2^8) parameters
-# Primitive polynomial for GF(2^8): x^8 + x^4 + x^3 + x^2 + 1
-primitive_polynomial = 0x11D  # This is the binary representation of the polynomial
-
-# Precompute the logarithm and exponential tables for GF(2^8)
-exp_table = [0] * 256
-log_table = [0] * 256
-
-x = 1
-for i in range(255):
-    exp_table[i] = x
-    log_table[x] = i
-    x <<= 1
-    if x & 0x100:  # If x is greater than 255, reduce it
-        x ^= primitive_polynomial
-
-# Define addition and multiplication in GF(2^8)
-def galois_add(a, b):
-    return a ^ b  # XOR for addition in GF(2)
-
-def galois_multiply(a, b):
-    if a == 0 or b == 0:
-        return 0
-    return exp_table[(log_table[a] + log_table[b]) % 255]
-
-# Minimal polynomials for BCH code
-minimal_polynomials = {
-    0: [1, 1],  # m0
-    1: [1, 0, 0, 0, 1, 1, 1, 0, 1],  # m1
-    3: [1, 0, 1, 1, 1, 0, 1, 1, 1],  # m3
-    5: [1, 1, 1, 1, 1, 0, 0, 1, 1],  # m5
-    7: [1, 0, 1, 1, 0, 1, 0, 0, 1],  # m7
-    9: [1, 1, 0, 1, 1, 1, 1, 0, 1],  # m9
-    11: [1, 1, 1, 1, 0, 0, 1, 1, 1],  # m11
-    13: [1, 0, 0, 1, 0, 1, 0, 1, 1],  # m13
-    15: [1, 1, 1, 0, 1, 0, 1, 1, 1],  # m15
-    17: [1, 0, 0, 1, 1],  # m17
-    19: [1, 0, 1, 1, 0, 0, 1, 0, 1],  # m19
-    21: [1, 1, 0, 0, 0, 1, 0, 1, 1],  # m21
-}
-
 class BCHCoder:
+    minimal_polynomials = {
+        0: [1, 1],  # m0
+        1: [1, 0, 0, 0, 1, 1, 1, 0, 1],  # m1
+        3: [1, 0, 1, 1, 1, 0, 1, 1, 1],  # m3
+        5: [1, 1, 1, 1, 1, 0, 0, 1, 1],  # m5
+        7: [1, 0, 1, 1, 0, 1, 0, 0, 1],  # m7
+        9: [1, 1, 0, 1, 1, 1, 1, 0, 1],  # m9
+        11: [1, 1, 1, 1, 0, 0, 1, 1, 1],  # m11
+        13: [1, 0, 0, 1, 0, 1, 0, 1, 1],  # m13
+        15: [1, 1, 1, 0, 1, 0, 1, 1, 1],  # m15
+        17: [1, 0, 0, 1, 1],  # m17
+        19: [1, 0, 1, 1, 0, 0, 1, 0, 1],  # m19
+        21: [1, 1, 0, 0, 0, 1, 0, 1, 1],  # m21
+
+    }
     def __init__(self, n, k, minimal_polynomials):
         self.n = n  # Length of the codeword
         self.k = k  # Length of the message
         self.t = (n - k) // 2  # Error correction capability
         self.minimal_polynomials = minimal_polynomials
         self.generator_polynomial = self.generate_generator_polynomial()
-        self.generator_matrix = self.generate_generator_matrix()
 
     def multiply_polynomials(self, poly1, poly2):
         """Multiply two polynomials in GF(2)."""
@@ -56,6 +29,21 @@ class BCHCoder:
                 result[i + j] ^= galois_multiply(coef1, coef2)
         return result
 
+    def divide_polynomials(self, dividend, divisor):
+        """Divide two polynomials in GF(2) and return the remainder."""
+        # Ensure dividend is at least as long as divisor
+        while len(dividend) >= len(divisor):
+            # Find the degree of the leading term
+            degree_diff = len(dividend) - len(divisor)
+            # Create a term to subtract
+            term = [0] * degree_diff + divisor
+            # Subtract (XOR) the divisor from the dividend
+            dividend = [a ^ b for a, b in zip(dividend, term)]
+            # Remove leading zeros
+            while dividend and dividend[-1] == 0:
+                dividend.pop()
+        return dividend
+
     def generate_generator_polynomial(self):
         """Generate the generator polynomial as the product of minimal polynomials."""
         generator_poly = [1]  # Initial polynomial: 1
@@ -64,27 +52,35 @@ class BCHCoder:
                 generator_poly = self.multiply_polynomials(generator_poly, self.minimal_polynomials[i])
         return generator_poly
 
-    def generate_generator_matrix(self):
-        """Generate the Generator Matrix G."""
-        P = [[0] * (self.n - self.k) for _ in range(self.k)]
-        for i in range(self.k):
-            for j in range(self.n - self.k):
-                P[i][j] = self.generator_polynomial[(i + j) % len(self.generator_polynomial)]
-        G = [[0] * self.n for _ in range(self.k)]
-        for i in range(self.k):
-            G[i][i:self.k] = [1] + [0] * (self.k - i - 1)
-            G[i][self.k:] = P[i]
-        return G
-
     def encode(self, message):
-        """Encode the message using the Generator Matrix G."""
+        """Encode the message using the BCH coding scheme."""
         if len(message) != self.k:
             raise ValueError(f"The message must be exactly {self.k} bits.")
-        codeword = [0] * self.n
-        for i in range(self.k):
-            for j in range(self.n):
-                codeword[j] ^= galois_multiply(message[i], self.generator_matrix[i][j])
-        return codeword
+
+        # Pad the message to the left with zeros to make it 171 bits
+        padded_message = [0] * (self.k - len(message)) + message
+
+        # Split the padded message into chunks of 171 bits
+        chunks = []
+        for i in range(0, len(padded_message), self.k):
+            chunk = padded_message[i:i + self.k]
+            if len(chunk) < self.k:
+                chunk = [0] * (self.k - len(chunk)) + chunk  # Pad with zeros on the left
+            chunks.append(chunk)
+
+        codewords = []
+        for chunk in chunks:
+            # Multiply by x^84
+            x84_m = [0] * 84 + chunk  # x^84 * m(x)
+
+            # Divide by generator polynomial to get the remainder
+            remainder = self.divide_polynomials(x84_m, self.generator_polynomial)
+
+            # Form the final codeword c(x) = x^84 * m(x) + r(x)
+            codeword = [(a ^ b) for a, b in zip(x84_m, remainder + [0] * (len(x84_m) - len(remainder)))]
+            codewords.append(codeword)
+
+        return codewords
 
 # Parameters
 n = 255
@@ -97,3 +93,4 @@ bch = BCHCoder(n, k, minimal_polynomials)
 message = [1] * k  # Message to encode
 encoded_message = bch.encode(message)
 print("Encoded message:", encoded_message)
+
