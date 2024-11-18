@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="nowy plik z kodowaniem - cholera wie jak to ma dzialac, ale nie dziala">
-      <change beforePath="$PROJECT_DIR$/.idea/NIDUC_projekt.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NIDUC_projekt.iml" afterDir="false" />
+    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="zastrzelcie mnie">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ciało_galois.py" beforeDir="false" afterPath="$PROJECT_DIR$/ciało_galois.py" afterDir="false" />
@@ -187,7 +186,7 @@
       <option name="presentableId" value="Default" />
       <updated>1730583387974</updated>
       <workItem from="1730583389386" duration="11103000" />
-      <workItem from="1731835895385" duration="6745000" />
+      <workItem from="1731835895385" duration="21069000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -221,7 +220,79 @@
       <option name="project" value="LOCAL" />
       <updated>1731846259320</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="kodowanie, ale nie jestem pewna czy dziala">
+      <option name="closed" value="true" />
+      <created>1731850789196</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1731850789196</updated>
+    </task>
+    <task id="LOCAL-00006" summary="inne kodowanie jednak">
+      <option name="closed" value="true" />
+      <created>1731851665320</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1731851665320</updated>
+    </task>
+    <task id="LOCAL-00007" summary="inne kodowanie jednak">
+      <option name="closed" value="true" />
+      <created>1731851842810</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1731851842810</updated>
+    </task>
+    <task id="LOCAL-00008" summary="z debugowaniem, ale chyba wciaz cos nie chce dzialac">
+      <option name="closed" value="true" />
+      <created>1731852280340</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1731852280340</updated>
+    </task>
+    <task id="LOCAL-00009" summary="chyba jednak dziala XD">
+      <option name="closed" value="true" />
+      <created>1731872673968</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1731872673968</updated>
+    </task>
+    <task id="LOCAL-00010" summary="losowe slowo kodowe">
+      <option name="closed" value="true" />
+      <created>1731873496734</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1731873496734</updated>
+    </task>
+    <task id="LOCAL-00011" summary="poprawiono (chyba) albo zepsuto">
+      <option name="closed" value="true" />
+      <created>1731875036246</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1731875036246</updated>
+    </task>
+    <task id="LOCAL-00012" summary="poprawiono (chyba) albo zepsuto">
+      <option name="closed" value="true" />
+      <created>1731875052913</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1731875052913</updated>
+    </task>
+    <task id="LOCAL-00013" summary="zastrzelcie mnie">
+      <option name="closed" value="true" />
+      <created>1731880038448</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1731880038448</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -242,11 +313,18 @@
     <MESSAGE value="." />
     <MESSAGE value="Tablicy mnozenia i dodawania w ciele GF(2^8)" />
     <MESSAGE value="nowy plik z kodowaniem - cholera wie jak to ma dzialac, ale nie dziala" />
-    <option name="LAST_COMMIT_MESSAGE" value="nowy plik z kodowaniem - cholera wie jak to ma dzialac, ale nie dziala" />
+    <MESSAGE value="kodowanie, ale nie jestem pewna czy dziala" />
+    <MESSAGE value="inne kodowanie jednak" />
+    <MESSAGE value="z debugowaniem, ale chyba wciaz cos nie chce dzialac" />
+    <MESSAGE value="chyba jednak dziala XD" />
+    <MESSAGE value="losowe slowo kodowe" />
+    <MESSAGE value="poprawiono (chyba) albo zepsuto" />
+    <MESSAGE value="zastrzelcie mnie" />
+    <option name="LAST_COMMIT_MESSAGE" value="zastrzelcie mnie" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDUC_projekt$ciao_galois.coverage" NAME="ciało_galois Coverage Results" MODIFIED="1731845514301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDUC_projekt$nowaWersja.coverage" NAME="nowaWersja Coverage Results" MODIFIED="1731850749307" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDUC_projekt$nowaWersja.coverage" NAME="nowaWersja Coverage Results" MODIFIED="1731964349274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$dosdsnkoa.coverage" NAME="dosdsnkoa Coverage Results" MODIFIED="1731846196881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1730587119180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
