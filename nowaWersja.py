@@ -1,6 +1,5 @@
 import random
 
-
 class BCHCoder:
     minimal_polynomials = {
         1: [1, 0, 0, 0, 1, 1, 1, 0, 1],  # m1
@@ -38,15 +37,21 @@ class BCHCoder:
 
     def compute_remainder(self, dividend, divisor):
         """Oblicza resztę z dzielenia wielomianów w ciele GF(2)."""
-        dividend = dividend[:]
+        dividend = dividend[:]  # Tworzymy kopię listy dividend
+
+        # Proces dzielenia
         while len(dividend) >= len(divisor):
-            degree_diff = len(dividend) - len(divisor)
-            factor = dividend[-1]
-            for i in range(len(divisor)):
-                dividend[i + degree_diff] ^= self.galois_multiply(factor, divisor[i])
-            while dividend and dividend[-1] == 0:
-                dividend.pop()
-        return dividend  # Zwracamy resztę
+            # Jeśli najwyższy bit dividend jest 1, to wykonujemy operację XOR
+            if dividend[0] == 1:
+                for i in range(len(divisor)):
+                    dividend[i] ^= divisor[i]  # Operacja XOR (mod 2)
+
+            # Przesuwamy dividend (pozbywamy się wiodących zer)
+            dividend.pop(0)
+
+        # Zwracamy resztę, uzupełniając ją do 84 bitów, jeśli potrzeba
+        remainder = dividend + [0] * (84 - len(dividend))  # Uzupełniamy do 84 bitów
+        return remainder
 
     def generate_generator_polynomial(self):
         """Generuje wielomian generujący na podstawie funkcji minimalnych."""
@@ -55,7 +60,7 @@ class BCHCoder:
             if i in self.minimal_polynomials:
                 m = self.minimal_polynomials[i]
                 g = self.multiply_polynomials(g, m)
-        print("Wielomian generujacy:",g)
+        print("Wielomian generujący:", g)
         return g
 
     def encode(self, message):
@@ -79,10 +84,9 @@ class BCHCoder:
         """Sprawdza, czy zakodowane słowo kodowe jest poprawne."""
         remainder = self.compute_remainder(codeword, self.generator_polynomial)
         ifCorrect = True
-        for i in range(len(remainder)):
-            if(remainder[i]!=0):
-                ifCorrect=False
-        #return all(x == 0 for x in remainder)
+        for i in range(84):
+            if remainder[i] != 0:
+                ifCorrect = False
         return ifCorrect
 
 
