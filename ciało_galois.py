@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 wielomian = 0x11B  # Nierozkładalny wielomian dla ciała GF(2^8)
 
 def galois_multiply(a, b):

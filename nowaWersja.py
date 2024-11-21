@@ -21,37 +21,23 @@ class BCHCoder:
         self.t = t
         self.generator_polynomial = self.generate_generator_polynomial()
 
-    def galois_multiply(self, a, b):
-        """Mnożenie w ciele Galois GF(2^8)."""
-        if a == 0 or b == 0:
-            return 0
-        return exp_table[(log_table[a] + log_table[b]) % 255]
-
     def multiply_polynomials(self, poly1, poly2):
-        """Mnoży dwa wielomiany w ciele GF(2)."""
         result = [0] * (len(poly1) + len(poly2) - 1)
         for i, coef1 in enumerate(poly1):
             for j, coef2 in enumerate(poly2):
-                result[i + j] ^= self.galois_multiply(coef1, coef2)
+                result[i + j] ^= coef1 & coef2  # XOR (mod 2)
         return result
 
     def compute_remainder(self, dividend, divisor):
-        """Oblicza resztę z dzielenia wielomianów w ciele GF(2)."""
-        dividend = dividend[:]  # Kopia listy
-
-        # Proces dzielenia
+        dividend = dividend[:]
         while len(dividend) >= len(divisor):
             if dividend[0] == 1:
                 for i in range(len(divisor)):
-                    dividend[i] ^= divisor[i]  # XOR (mod 2)
+                    dividend[i] ^= divisor[i]
             dividend.pop(0)
-
-        # Uzupełnienie reszty do 84 bitów
-        remainder = dividend + [0] * (84 - len(dividend))
-        return remainder
+        return dividend
 
     def generate_generator_polynomial(self):
-        """Generuje wielomian generujący na podstawie funkcji minimalnych."""
         g = [1]
         for i in range(1, 2 * self.t + 1, 2):
             if i in self.minimal_polynomials:
@@ -61,44 +47,79 @@ class BCHCoder:
         return g
 
     def encode(self, message):
-        """Koduje wiadomość wejściową, dodając bity kontrolne."""
-        if len(message) != 171:
-            raise ValueError(f"Message must be exactly 171 bits.")
-
-        # Przesunięcie wiadomości o 84 pozycje w lewo (dodanie 84 zer na końcu)
-        padded_message = message + [0] * 84
-
-        # Obliczenie reszty (bitów kontrolnych)
+        if len(message) != self.k:
+            raise ValueError(f"Message must be exactly {self.k} bits.")
+        padded_message = message + [0] * (self.n - self.k)
         remainder = self.compute_remainder(padded_message, self.generator_polynomial)
-
-        # Dodanie reszty do przesuniętej wiadomości
-        for i in range(84):
-            padded_message[171 + i] ^= remainder[i]  # XOR na końcowych 84 bitach
-
-        # Słowo kodowe to przesunięta wiadomość z dodaną resztą
-        return padded_message
-
+        encoded_message = message + remainder
+        return encoded_message
 
     def validate_codeword(self, codeword):
-        """Sprawdza, czy zakodowane słowo kodowe jest poprawne."""
         remainder = self.compute_remainder(codeword, self.generator_polynomial)
-        print("Reszta weryfikacyjna: ", remainder)
         return all(bit == 0 for bit in remainder)
 
+    def highlight_errors(self, codeword, error_positions):
+        """Funkcja pomocnicza do kolorowania błędnych pozycji na czerwono."""
+        colored_codeword = ""
+        for i in range(len(codeword)):
+            if i in error_positions:
+                colored_codeword += f"\033[91m{codeword[i]}\033[0m"  # Czerwony kolor dla błędu
+            else:
+                colored_codeword += str(codeword[i])
+            if i < len(codeword) - 1:
+                colored_codeword += ', '  # Dodanie przecinka między bitami
+        return colored_codeword
 
-# Przygotowanie ciała Galois GF(2^8)
-primitive_polynomial = 0x11D  # x^8 + x^4 + x^3 + x^2 + 1
-exp_table = [0] * 256
-log_table = [0] * 256
+    def decode_with_error_correction(self, received_codeword):
+        shifts = 0
+        max_shifts = len(received_codeword)  # Zabezpieczenie przed nieskończonym przesuwaniem
 
-x = 1
-for i in range(255):
-    exp_table[i] = x
-    log_table[x] = i
-    x <<= 1
-    if x & 0x100:
-        x ^= primitive_polynomial
-exp_table[255] = exp_table[0]
+        while shifts < max_shifts:
+            # Oblicz syndrom
+            syndrome = self.compute_remainder(received_codeword, self.generator_polynomial)
+            weight = sum(syndrome)  # Waga syndromu (liczba jedynek)
+
+            # Jeśli waga syndromu <= t, dokonaj korekcji
+            if weight <= self.t:
+                print("Waga syndromu <= t. Rozpoczynam korekcję.")
+                print("Przesunięcie:", shifts)
+                for i in range(len(syndrome)):
+                    received_codeword[-len(syndrome) + i] ^= syndrome[i]  # Odejmowanie syndromu (XOR)
+
+                # Przywróć pierwotną postać przez przesunięcie w lewo
+                for _ in range(shifts):
+                    received_codeword = received_codeword[1:] + [received_codeword[0]]
+                return received_codeword
+
+            # Waga syndromu > t, przesuwamy w prawo
+            received_codeword = [received_codeword[-1]] + received_codeword[:-1]
+            shifts += 1
+
+        # Jeśli nie można poprawić, zgłoś błąd
+        raise ValueError("Błędy są niekorygowalne.")
+
+    def recover_original_message(self, decoded_codeword):
+        """
+        Odnajduje pierwotną wiadomość przez dzielenie poprawionego kodu przez wielomian generujący.
+
+        Argumenty:
+            decoded_codeword (list[int]): Poprawiony wektor kodowy BCH (n bitów).
+
+        Zwraca:
+            list[int]: Pierwotna wiadomość (k bitów).
+        """
+        if len(decoded_codeword) != self.n:
+            raise ValueError(f"Poprawiony kod musi mieć dokładnie {self.n} bitów.")
+
+        # Podziel kod przez wielomian generujący
+        remainder = self.compute_remainder(decoded_codeword, self.generator_polynomial)
+        if any(remainder):
+            raise ValueError("Kod nie jest wielokrotnością wielomianu generującego.")
+
+        # Wyciągnij pierwsze k bitów jako oryginalną wiadomość
+        original_message = decoded_codeword[:self.k]
+        return original_message
+
 
 # Parametry kodu BCH
 n = 255
@@ -109,15 +130,37 @@ t = 11
 bch = BCHCoder(n, k, t)
 
 # Generowanie losowej wiadomości
-message = [random.randint(0, 1) for _ in range(171)]
+message = [random.randint(0, 1) for _ in range(k)]
 print("Wiadomość:", message)
 
 # Kodowanie wiadomości
 encoded_message = bch.encode(message)
 print("Zakodowana wiadomość:", encoded_message)
-
-# Sprawdzenie poprawności słowa kodowego
 if bch.validate_codeword(encoded_message):
     print("Słowo kodowe jest poprawne.")
 else:
     print("Słowo kodowe jest niepoprawne.")
+# Symulacja błędu (dodanie jednego błędu na losowej pozycji)
+received_message = encoded_message[:]
+error_position = random.randint(0, n - 1)
+received_message[error_position] ^= 1
+print(f"Odebrana wiadomość z błędem na pozycji {error_position}:")
+highlighted_received_message = bch.highlight_errors(received_message, [error_position])
+print("                     [", highlighted_received_message, "]")
+
+# Dekodowanie wiadomości z korekcją błędów
+try:
+    corrected_codeword = bch.decode_with_error_correction(received_message)
+    print("Poprawiony kod:      ", corrected_codeword)
+
+    # Odzyskiwanie pierwotnej wiadomości
+    original_message = bch.recover_original_message(corrected_codeword)
+    print("Oryginalna wiadomość:", original_message)
+
+    # Porównanie z pierwotną wiadomością
+    if message == original_message:
+        print("Odzyskano pierwotną wiadomość poprawnie!")
+    else:
+        print("Odzyskana wiadomość nie zgadza się z oryginalną.")
+except ValueError as e:
+    print("Błąd dekodowania:", e)
