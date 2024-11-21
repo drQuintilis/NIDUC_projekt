@@ -121,7 +121,7 @@ class BCHCoder:
         return original_message
 
 
-# Parametry kodu BCH
+
 n = 255
 k = 171
 t = 11
