@@ -1,4 +1,17 @@
+import json
 import random
+
+import pandas as pd
+from progressbar import progressbar
+
+class EncodingError(Exception):
+    pass
+
+class MessagesNotMatchError(Exception):
+    pass
+
+class MessageUnfixableError(Exception):
+    pass
 
 class BCHCoder:
     minimal_polynomials = {
@@ -43,7 +56,6 @@ class BCHCoder:
             if i in self.minimal_polynomials:
                 m = self.minimal_polynomials[i]
                 g = self.multiply_polynomials(g, m)
-        print("Wielomian generujący:", g)
         return g
 
     def encode(self, message):
@@ -81,8 +93,6 @@ class BCHCoder:
 
             # Jeśli waga syndromu <= t, dokonaj korekcji
             if weight <= self.t:
-                print("Waga syndromu <= t. Rozpoczynam korekcję.")
-                print("Przesunięcie:", shifts)
                 for i in range(len(syndrome)):
                     received_codeword[-len(syndrome) + i] ^= syndrome[i]  # Odejmowanie syndromu (XOR)
 
@@ -96,7 +106,7 @@ class BCHCoder:
             shifts += 1
 
         # Jeśli nie można poprawić, zgłoś błąd
-        raise ValueError("Błędy są niekorygowalne.")
+        raise MessageUnfixableError("Błędy są niekorygowalne.")
 
     def recover_original_message(self, decoded_codeword):
         """
@@ -120,44 +130,140 @@ class BCHCoder:
         original_message = decoded_codeword[:self.k]
         return original_message
 
+def error_generator_random(n, errors_amount):
+    errors_array = []
+    for i in range(errors_amount):
+        while len(errors_array) < i + 1:
+            error_position = random.randint(0, n - 1)
+            if error_position in errors_array:
+                continue
+            errors_array.append(error_position)
+    return errors_array
 
-# Parametry kodu BCH
-n = 255
-k = 171
-t = 11
+def error_generator_burst(n, errors_amount):
+    errors_array = []
+    error_position = random.randint(0, n - 1)
+    for i in range(errors_amount):
+        errors_array.append((error_position+i) % n)
+    return errors_array
 
-# Inicjalizacja kodera BCH
-bch = BCHCoder(n, k, t)
+def error_flip(message, position):
+    message[position] ^= 1
 
-# Generowanie losowej wiadomości
-message = [random.randint(0, 1) for _ in range(k)]
-print("Wiadomość:", message)
+def error_to_high(message, position):
+    message[position] = 1
 
-# Kodowanie wiadomości
-encoded_message = bch.encode(message)
-print("Zakodowana wiadomość:", encoded_message)
+def error_to_low(message, position):
+    message[position] = 0
 
-# Symulacja błędu (dodanie jednego błędu na losowej pozycji)
-received_message = encoded_message[:]
-error_position = random.randint(0, n - 1)
-received_message[error_position] ^= 1
-print(f"Odebrana wiadomość z błędem na pozycji {error_position}:")
-highlighted_received_message = bch.highlight_errors(received_message, [error_position])
-print("          [", highlighted_received_message, "]")
 
-# Dekodowanie wiadomości z korekcją błędów
-try:
+def decoder_test(bch, errors_amount, error_generator, error_type=error_flip):
+    # Generowanie losowej wiadomości
+    message = [random.randint(0, 1) for _ in range(k)]
+    # Kodowanie wiadomości
+    encoded_message = bch.encode(message)
+    if not bch.validate_codeword(encoded_message):
+        raise EncodingError("Niepoprawny kod.")
+    # Symulacja błędu (dodanie jednego błędu na losowej pozycji)
+    received_message = encoded_message[:]
+    errors_array = error_generator(n, errors_amount)
+    for error_position in errors_array:
+        error_type(received_message, error_position)
     corrected_codeword = bch.decode_with_error_correction(received_message)
-    print("Poprawiony kod:", corrected_codeword)
-
-    # Odzyskiwanie pierwotnej wiadomości
     original_message = bch.recover_original_message(corrected_codeword)
-    print("Oryginalna wiadomość:", original_message)
+    if message != original_message:
+        raise MessagesNotMatchError("Odzyskana wiadomość nie zgadza się z oryginalną.")
 
-    # Porównanie z pierwotną wiadomością
-    if message == original_message:
-        print("Odzyskano pierwotną wiadomość poprawnie!")
-    else:
-        print("Odzyskana wiadomość nie zgadza się z oryginalną.")
-except ValueError as e:
-    print("Błąd dekodowania:", e)
+def write_to_excel(data, file_name):
+    #Zapisywanie tabelę do pliku Excel
+    df = pd.DataFrame.from_dict(data)
+    df = df.transpose()
+    df.to_excel(file_name, index=False, header=True)
+    print(f"Tablica została zapisana do {file_name}")
+
+
+test_suite = [
+    {
+        'name': 'Random errors',
+        'error_generator': error_generator_random,
+        'error_type': error_flip,
+        'min_errors': 1,
+        'max_errors': 12,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Random errors',
+        'error_generator': error_generator_random,
+        'error_type': error_flip,
+        'min_errors': 30,
+        'max_errors': 30,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Burst errors high',
+        'error_generator': error_generator_burst,
+        'error_type': error_to_high,
+        'min_errors': 1,
+        'max_errors': 16,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Burst errors high',
+        'error_generator': error_generator_burst,
+        'error_type': error_to_high,
+        'min_errors': 30,
+        'max_errors': 30,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Burst errors low',
+        'error_generator': error_generator_burst,
+        'error_type': error_to_low,
+        'min_errors': 1,
+        'max_errors': 16,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Burst errors low',
+        'error_generator': error_generator_burst,
+        'error_type': error_to_low,
+        'min_errors': 30,
+        'max_errors': 30,
+        'test_amount': 100,
+    },
+]
+
+if __name__ == '__main__':
+    n = 255
+    k = 171
+    t = 11
+
+    # Inicjalizacja kodera BCH
+    bch_coder = BCHCoder(n, k, t)
+
+    test_info = {}
+    for test_case in test_suite:
+        for i in range(test_case['min_errors'], test_case['max_errors'] + 1):
+            test_info[f"{test_case['name']} errors: {i}"] = {
+                'test_case': test_case['name'],
+                'errors_amount': i,
+                'test_amount': test_case['test_amount'],
+                'success': 0,
+                'unfixable': 0,
+                'fixed_incorrectly': 0,
+                'encoding_error': 0,
+            }
+            for _ in progressbar(range(test_case['test_amount']), prefix=f"{test_case['name']} amount: {i} "):
+                try:
+                    decoder_test(bch_coder, i, test_case['error_generator'], test_case['error_type'])
+                except MessagesNotMatchError as e:
+                    test_info[f"{test_case['name']} errors: {i}"]['fixed_incorrectly'] += 1
+                except EncodingError as e:
+                    test_info[f"{test_case['name']} errors: {i}"]['encoding_error'] += 1
+                except MessageUnfixableError as e:
+                    test_info[f"{test_case['name']} errors: {i}"]['unfixable'] += 1
+                else:
+                    test_info[f"{test_case['name']} errors: {i}"]['success'] += 1
+    write_to_excel(test_info, "test_info.xlsx")
+    print(json.dumps(list(test_info.items()), indent=4))
+
