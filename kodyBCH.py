@@ -231,6 +231,22 @@ test_suite = [
         'max_errors': 30,
         'test_amount': 100,
     },
+    {
+        'name': 'Burst errors flip',
+        'error_generator': error_generator_burst,
+        'error_type': error_flip,
+        'min_errors': 1,
+        'max_errors': 16,
+        'test_amount': 100,
+    },
+    {
+        'name': 'Burst errors flip',
+        'error_generator': error_generator_burst,
+        'error_type': error_flip,
+        'min_errors': 30,
+        'max_errors': 30,
+        'test_amount': 100,
+    },
 ]
 
 if __name__ == '__main__':
@@ -264,6 +280,6 @@ if __name__ == '__main__':
                     test_info[f"{test_case['name']} errors: {i}"]['unfixable'] += 1
                 else:
                     test_info[f"{test_case['name']} errors: {i}"]['success'] += 1
-    write_to_excel(test_info, "test_info.xlsx")
+    write_to_excel(test_info, "test_info_2.xlsx")
     print(json.dumps(list(test_info.items()), indent=4))
 
