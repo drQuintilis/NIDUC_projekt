@@ -183,69 +183,89 @@ def write_to_excel(data, file_name):
 
 
 test_suite = [
+    # Losowe błędy z odwróceniem bitów
     {
         'name': 'Random errors',
         'error_generator': error_generator_random,
         'error_type': error_flip,
-        'min_errors': 1,
-        'max_errors': 12,
-        'test_amount': 100,
+        'error_config': {
+            1: 255,   # 50 testów dla 1 błędu
+            2:1000,   # 60 testów dla 2 błędów
+            3: 1000,
+            4: 1000,
+            5: 1000,
+            6: 1000,
+            7:1000,
+            8:1000,
+            9:1000,
+            10:1000,
+            11:1000,
+            12: 1000, # 100 testów dla 12 błędów
+            30: 200, # 200 testów dla 30 błędów
+        }
     },
+    # Wiązka wysokich błędów
     {
-        'name': 'Random errors',
-        'error_generator': error_generator_random,
-        'error_type': error_flip,
-        'min_errors': 30,
-        'max_errors': 30,
-        'test_amount': 100,
-    },
-    {
-        'name': 'Burst errors high',
+        'name': 'Burst high errors',
         'error_generator': error_generator_burst,
         'error_type': error_to_high,
-        'min_errors': 1,
-        'max_errors': 16,
-        'test_amount': 100,
+        'error_config': {
+            1:255,
+            2: 254,
+            3: 253,
+            4: 252,
+            5: 251,
+            6: 250,
+            7: 249,
+            8: 248,
+            9: 247,
+            10: 246,
+            11: 245,
+            12: 244,  # 100 testów dla 12 błędów
+            30: 200 # bo nie oczekujemy wysokiej skutecznosci
+        }
     },
+    # Wiązka niskich błędów
     {
-        'name': 'Burst errors high',
-        'error_generator': error_generator_burst,
-        'error_type': error_to_high,
-        'min_errors': 30,
-        'max_errors': 30,
-        'test_amount': 100,
-    },
-    {
-        'name': 'Burst errors low',
-        'error_generator': error_generator_burst,
-        'error_type': error_to_low,
-        'min_errors': 1,
-        'max_errors': 16,
-        'test_amount': 100,
-    },
-    {
-        'name': 'Burst errors low',
+        'name': 'Burst low errors',
         'error_generator': error_generator_burst,
         'error_type': error_to_low,
-        'min_errors': 30,
-        'max_errors': 30,
-        'test_amount': 100,
+        'error_config': {
+            1:255,
+            2: 254,  # 60 testów dla 2 błędów
+            3: 253,
+            4: 252,
+            5: 251,
+            6: 250,
+            7: 249,
+            8: 248,
+            9: 247,
+            10:246,
+            11: 245,
+            12: 244,  # 100 testów dla 12 błędów
+            30: 200,
+        }
     },
+    # Odwracanie bitów w wiązkach
     {
-        'name': 'Burst errors flip',
+        'name': 'Burst flip errors',
         'error_generator': error_generator_burst,
         'error_type': error_flip,
-        'min_errors': 1,
-        'max_errors': 16,
-        'test_amount': 100,
-    },
-    {
-        'name': 'Burst errors flip',
-        'error_generator': error_generator_burst,
-        'error_type': error_flip,
-        'min_errors': 30,
-        'max_errors': 30,
-        'test_amount': 100,
+        'error_config': {
+            1:255,# 50 testów dla 1 błędu
+            2: 254,  # 60 testów dla 2 błędów
+            3: 253,
+            4: 252,
+            5: 251,
+            6: 250,
+            7: 249,
+            8: 248,
+            9: 247,
+            10: 246,
+            11: 245,
+            12: 244,  # 100 testów dla 12 błędów
+            30: 243,
+        }
     },
 ]
 
@@ -259,27 +279,27 @@ if __name__ == '__main__':
 
     test_info = {}
     for test_case in test_suite:
-        for i in range(test_case['min_errors'], test_case['max_errors'] + 1):
-            test_info[f"{test_case['name']} errors: {i}"] = {
+        for error_count, test_amount in test_case['error_config'].items():
+            test_info[f"{test_case['name']} errors: {error_count}"] = {
                 'test_case': test_case['name'],
-                'errors_amount': i,
-                'test_amount': test_case['test_amount'],
+                'errors_amount': error_count,
+                'test_amount': test_amount,
                 'success': 0,
                 'unfixable': 0,
                 'fixed_incorrectly': 0,
                 'encoding_error': 0,
             }
-            for _ in progressbar(range(test_case['test_amount']), prefix=f"{test_case['name']} amount: {i} "):
+            for _ in progressbar(range(test_amount), prefix=f"{test_case['name']} amount: {error_count} "):
                 try:
-                    decoder_test(bch_coder, i, test_case['error_generator'], test_case['error_type'])
-                except MessagesNotMatchError as e:
-                    test_info[f"{test_case['name']} errors: {i}"]['fixed_incorrectly'] += 1
-                except EncodingError as e:
-                    test_info[f"{test_case['name']} errors: {i}"]['encoding_error'] += 1
-                except MessageUnfixableError as e:
-                    test_info[f"{test_case['name']} errors: {i}"]['unfixable'] += 1
+                    decoder_test(bch_coder, error_count, test_case['error_generator'], test_case['error_type'])
+                except MessagesNotMatchError:
+                    test_info[f"{test_case['name']} errors: {error_count}"]['fixed_incorrectly'] += 1
+                except EncodingError:
+                    test_info[f"{test_case['name']} errors: {error_count}"]['encoding_error'] += 1
+                except MessageUnfixableError:
+                    test_info[f"{test_case['name']} errors: {error_count}"]['unfixable'] += 1
                 else:
-                    test_info[f"{test_case['name']} errors: {i}"]['success'] += 1
-    write_to_excel(test_info, "test_info_2.xlsx")
-    print(json.dumps(list(test_info.items()), indent=4))
+                    test_info[f"{test_case['name']} errors: {error_count}"]['success'] += 1
 
+    write_to_excel(test_info, "test_info_nowe.xlsx")
+    # print(json.dumps(list(test_info.items()), indent=4))

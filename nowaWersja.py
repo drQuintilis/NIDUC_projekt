@@ -77,11 +77,14 @@ class BCHCoder:
         while shifts < max_shifts:
             # Oblicz syndrom
             syndrome = self.compute_remainder(received_codeword, self.generator_polynomial)
-            weight = sum(syndrome)  # Waga syndromu (liczba jedynek)
+            weight = sum(syndrome)
+            print("Waga syndromu =", weight)
+            # Waga syndromu (liczba jedynek)
 
             # Jeśli waga syndromu <= t, dokonaj korekcji
             if weight <= self.t:
                 print("Waga syndromu <= t. Rozpoczynam korekcję.")
+
                 print("Przesunięcie:", shifts)
                 for i in range(len(syndrome)):
                     received_codeword[-len(syndrome) + i] ^= syndrome[i]  # Odejmowanie syndromu (XOR)
@@ -142,7 +145,7 @@ else:
     print("Słowo kodowe jest niepoprawne.")
 # Symulacja błędu (dodanie jednego błędu na losowej pozycji)
 received_message = encoded_message[:]
-error_position = random.randint(0, n - 1)
+error_position = random.randint(127, 127)
 received_message[error_position] ^= 1
 print(f"Odebrana wiadomość z błędem na pozycji {error_position}:")
 highlighted_received_message = bch.highlight_errors(received_message, [error_position])

@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="update">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="update z dekoderem od Kingi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ciało_galois.py" beforeDir="false" afterPath="$PROJECT_DIR$/ciało_galois.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gf_2_8_tabliczka_dodawania.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/gf_2_8_tabliczka_dodawania.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gf_2_8_tabliczka_mnozenia.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/gf_2_8_tabliczka_mnozenia.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/klefmkldfmsklfdmsl.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kodyBCH.py" beforeDir="false" afterPath="$PROJECT_DIR$/kodyBCH.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nowaWersja.py" beforeDir="false" afterPath="$PROJECT_DIR$/nowaWersja.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_info.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/test_info.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_info_2.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/test_info_2.xlsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +51,7 @@
   &quot;keyToString&quot;: {
     &quot;Python.ciało_galois.executor&quot;: &quot;Run&quot;,
     &quot;Python.dosdsnkoa.executor&quot;: &quot;Run&quot;,
+    &quot;Python.kodyBCH.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.nowaWersja.executor&quot;: &quot;Run&quot;,
     &quot;Python.nowszaWersja.executor&quot;: &quot;Run&quot;,
@@ -70,30 +68,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.nowaWersja">
-    <configuration name="ciało_galois" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NIDUC_projekt" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ciało_galois.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.kodyBCH">
     <configuration name="dosdsnkoa" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="NIDUC_projekt" />
       <option name="ENV_FILES" value="" />
@@ -109,6 +84,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dosdsnkoa.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="kodyBCH" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NIDUC_projekt" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/kodyBCH.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -211,11 +209,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.kodyBCH" />
         <item itemvalue="Python.nowaWersja" />
         <item itemvalue="Python.nowszaWersja" />
         <item itemvalue="Python.wiel_gen" />
         <item itemvalue="Python.dosdsnkoa" />
-        <item itemvalue="Python.ciało_galois" />
       </list>
     </recent_temporary>
   </component>
@@ -239,7 +237,11 @@
       <workItem from="1731835895385" duration="44935000" />
       <workItem from="1732124778472" duration="818000" />
       <workItem from="1732126326080" duration="2308000" />
-      <workItem from="1732202933767" duration="700000" />
+      <workItem from="1732202933767" duration="800000" />
+      <workItem from="1732208136154" duration="85000" />
+      <workItem from="1732625939812" duration="53000" />
+      <workItem from="1732795827221" duration="3659000" />
+      <workItem from="1733169531918" duration="23372000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -377,7 +379,23 @@
       <option name="project" value="LOCAL" />
       <updated>1732129001398</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="update z dekoderem od Kingi">
+      <option name="closed" value="true" />
+      <created>1732208048049</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1732208048049</updated>
+    </task>
+    <task id="LOCAL-00019" summary="update z dekoderem od Kingi">
+      <option name="closed" value="true" />
+      <created>1732208207334</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1732208207334</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,14 +426,16 @@
     <MESSAGE value="poprawiono troszke - odpowiednie podzielenie slowa kodowego, ale cos jeszcze nie chce dzialac" />
     <MESSAGE value="chyba dziala!!!!!!" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="update z dekoderem od Kingi" />
+    <option name="LAST_COMMIT_MESSAGE" value="update z dekoderem od Kingi" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDUC_projekt$ciao_galois.coverage" NAME="ciało_galois Coverage Results" MODIFIED="1731845514301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$wiel_gen.coverage" NAME="wiel_gen Coverage Results" MODIFIED="1732038528785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDUC_projekt$nowaWersja.coverage" NAME="nowaWersja Coverage Results" MODIFIED="1732203361276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDUC_projekt$nowaWersja.coverage" NAME="nowaWersja Coverage Results" MODIFIED="1733324933561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$dosdsnkoa.coverage" NAME="dosdsnkoa Coverage Results" MODIFIED="1731846196881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$nowszaWersja.coverage" NAME="nowszaWersja Coverage Results" MODIFIED="1732040450638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1730587119180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDUC_projekt$kodyBCH.coverage" NAME="kodyBCH Coverage Results" MODIFIED="1733341771758" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
