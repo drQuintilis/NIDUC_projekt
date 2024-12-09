@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="update z dekoderem od Kingi">
+    <list default="true" id="8c39fe64-09ed-42e9-8d16-09abc9911b21" name="Changes" comment="nowe testy">
+      <change afterPath="$PROJECT_DIR$/kombinacje.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kodyBCH.py" beforeDir="false" afterPath="$PROJECT_DIR$/kodyBCH.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nowaWersja.py" beforeDir="false" afterPath="$PROJECT_DIR$/nowaWersja.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_info.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/test_info.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_info_2.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/test_info_2.xlsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +49,7 @@
     &quot;Python.ciało_galois.executor&quot;: &quot;Run&quot;,
     &quot;Python.dosdsnkoa.executor&quot;: &quot;Run&quot;,
     &quot;Python.kodyBCH.executor&quot;: &quot;Run&quot;,
+    &quot;Python.kombinacje.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.nowaWersja.executor&quot;: &quot;Run&quot;,
     &quot;Python.nowszaWersja.executor&quot;: &quot;Run&quot;,
@@ -68,30 +66,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.kodyBCH">
-    <configuration name="dosdsnkoa" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NIDUC_projekt" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dosdsnkoa.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.kombinacje">
     <configuration name="kodyBCH" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="NIDUC_projekt" />
       <option name="ENV_FILES" value="" />
@@ -107,6 +82,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/kodyBCH.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="kombinacje" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NIDUC_projekt" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/kombinacje.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -209,11 +207,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.kombinacje" />
         <item itemvalue="Python.kodyBCH" />
         <item itemvalue="Python.nowaWersja" />
         <item itemvalue="Python.nowszaWersja" />
         <item itemvalue="Python.wiel_gen" />
-        <item itemvalue="Python.dosdsnkoa" />
       </list>
     </recent_temporary>
   </component>
@@ -241,7 +239,9 @@
       <workItem from="1732208136154" duration="85000" />
       <workItem from="1732625939812" duration="53000" />
       <workItem from="1732795827221" duration="3659000" />
-      <workItem from="1733169531918" duration="23372000" />
+      <workItem from="1733169531918" duration="25405000" />
+      <workItem from="1733511049349" duration="5269000" />
+      <workItem from="1733777089675" duration="2193000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -395,7 +395,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732208207334</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="nowe testy">
+      <option name="closed" value="true" />
+      <created>1733356717307</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1733356717308</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -427,12 +435,14 @@
     <MESSAGE value="chyba dziala!!!!!!" />
     <MESSAGE value="update" />
     <MESSAGE value="update z dekoderem od Kingi" />
-    <option name="LAST_COMMIT_MESSAGE" value="update z dekoderem od Kingi" />
+    <MESSAGE value="nowe testy" />
+    <option name="LAST_COMMIT_MESSAGE" value="nowe testy" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDUC_projekt$ciao_galois.coverage" NAME="ciało_galois Coverage Results" MODIFIED="1731845514301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$wiel_gen.coverage" NAME="wiel_gen Coverage Results" MODIFIED="1732038528785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$nowaWersja.coverage" NAME="nowaWersja Coverage Results" MODIFIED="1733324933561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDUC_projekt$kombinacje.coverage" NAME="kombinacje Coverage Results" MODIFIED="1733779270295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$dosdsnkoa.coverage" NAME="dosdsnkoa Coverage Results" MODIFIED="1731846196881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$nowszaWersja.coverage" NAME="nowszaWersja Coverage Results" MODIFIED="1732040450638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDUC_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1730587119180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
