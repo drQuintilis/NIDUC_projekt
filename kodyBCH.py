@@ -158,13 +158,11 @@ def error_to_low(message, position):
 
 
 def decoder_test(bch, errors_amount, error_generator, error_type=error_flip):
-    # Generowanie losowej wiadomości
     message = [random.randint(0, 1) for _ in range(k)]
-    # Kodowanie wiadomości
     encoded_message = bch.encode(message)
     if not bch.validate_codeword(encoded_message):
         raise EncodingError("Niepoprawny kod.")
-    # Symulacja błędu (dodanie jednego błędu na losowej pozycji)
+
     received_message = encoded_message[:]
     errors_array = error_generator(n, errors_amount)
     for error_position in errors_array:
@@ -175,7 +173,6 @@ def decoder_test(bch, errors_amount, error_generator, error_type=error_flip):
         raise MessagesNotMatchError("Odzyskana wiadomość nie zgadza się z oryginalną.")
 
 def write_to_excel(data, file_name):
-    #Zapisywanie tabelę do pliku Excel
     df = pd.DataFrame.from_dict(data)
     df = df.transpose()
     df.to_excel(file_name, index=False, header=True)
@@ -183,88 +180,86 @@ def write_to_excel(data, file_name):
 
 
 test_suite = [
-    # Losowe błędy z odwróceniem bitów
     {
         'name': 'Random errors',
         'error_generator': error_generator_random,
         'error_type': error_flip,
         'error_config': {
-            1: 255,   # 50 testów dla 1 błędu
-            2:1000,   # 60 testów dla 2 błędów
-            3: 1000,
-            4: 1000,
-            5: 1000,
-            6: 1000,
-            7:1000,
-            8:1000,
-            9:1000,
-            10:1000,
-            11:1000,
-            12: 1000, # 100 testów dla 12 błędów
-            30: 200, # 200 testów dla 30 błędów
+            1: 300,
+            2:600,
+            3: 900,
+            4: 600,
+            5:  400,
+            6:  600,
+            7: 300,
+            8: 300,
+            9: 300,
+            10: 300,
+            11: 300,
+            12:  300,
+            30: 300,
         }
     },
-    # Wiązka wysokich błędów
+
     {
         'name': 'Burst high errors',
         'error_generator': error_generator_burst,
         'error_type': error_to_high,
         'error_config': {
-            1:255,
-            2: 254,
-            3: 253,
-            4: 252,
-            5: 251,
-            6: 250,
-            7: 249,
-            8: 248,
-            9: 247,
-            10: 246,
-            11: 245,
-            12: 244,  # 100 testów dla 12 błędów
-            30: 200 # bo nie oczekujemy wysokiej skutecznosci
+            1: 300,
+            2: 300,
+            3:  300,
+            4:  300,
+            5:  300,
+            6:  300,
+            7:  300,
+            8:  300,
+            9:  300,
+            10:  300,
+            11:  300,
+            12:  300,
+            30:  300
         }
     },
-    # Wiązka niskich błędów
+
     {
         'name': 'Burst low errors',
         'error_generator': error_generator_burst,
         'error_type': error_to_low,
         'error_config': {
-            1:255,
-            2: 254,  # 60 testów dla 2 błędów
-            3: 253,
-            4: 252,
-            5: 251,
-            6: 250,
-            7: 249,
-            8: 248,
-            9: 247,
-            10:246,
-            11: 245,
-            12: 244,  # 100 testów dla 12 błędów
-            30: 200,
+            1:300,
+            2: 300,
+            3: 300,
+            4:300,
+            5: 300,
+            6: 300,
+            7: 300,
+            8: 300,
+            9: 300,
+            10:300,
+            11: 300,
+            12: 300,
+            30: 300,
         }
     },
-    # Odwracanie bitów w wiązkach
-    {
+     {
         'name': 'Burst flip errors',
         'error_generator': error_generator_burst,
         'error_type': error_flip,
         'error_config': {
-            1:255,# 50 testów dla 1 błędu
-            2: 254,  # 60 testów dla 2 błędów
-            3: 253,
-            4: 252,
-            5: 251,
-            6: 250,
-            7: 249,
-            8: 248,
-            9: 247,
-            10: 246,
-            11: 245,
-            12: 244,  # 100 testów dla 12 błędów
-            30: 243,
+            1:300,
+            2:300,
+            3: 300,
+            4: 300,
+            5: 300,
+            6: 300,
+            7: 300,
+            8: 300,
+            9: 300,
+            10: 300,
+            11: 300,
+            12: 300,
+            30:300,
         }
     },
 ]
@@ -274,7 +269,6 @@ if __name__ == '__main__':
     k = 171
     t = 11
 
-    # Inicjalizacja kodera BCH
     bch_coder = BCHCoder(n, k, t)
 
     test_info = {}
