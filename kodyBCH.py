@@ -13,6 +13,31 @@ class MessagesNotMatchError(Exception):
 class MessageUnfixableError(Exception):
     pass
 
+def poly_to_int(poly):
+    """Konwertuje wielomian z listy na liczbę całkowitą."""
+    return int(''.join(map(str, poly)), 2)
+
+def int_to_poly(num, length):
+    """Konwertuje liczbę całkowitą na wielomian w postaci listy zer i jedynek."""
+    return list(map(int, bin(num)[2:].zfill(length)))
+
+def gf_mul(x, y, prim=0x11d, field_size=8):
+    """
+    Mnożenie w GF(2^m) przy m=8 i prymitywnym wielomianie 0x11d dla operacji podobnych do AES.
+    0x11d odpowiada x^8 + x^4 + x^3 + x + 1.
+    """
+    r = 0
+    for i in range(field_size):
+        if y & 1:
+            r ^= x
+        hbs = x & 0x80
+        x <<= 1
+        if hbs:
+            x ^= prim
+        x &= 0xFF
+        y >>= 1
+    return r
+
 class BCHCoder:
     minimal_polynomials = {
         1: [1, 0, 0, 0, 1, 1, 1, 0, 1],  # m1
@@ -31,8 +56,42 @@ class BCHCoder:
     def __init__(self, n, k, t):
         self.n = n
         self.k = k
+        self.m = n - k
         self.t = t
         self.generator_polynomial = self.generate_generator_polynomial()
+        self.log_table, self.antilog_table = self.build_tables()
+
+    def build_tables(self, prim=0x11d):
+        # Budowanie tabel wykładników i logarytmów
+        # α = 0x02 w wybranej reprezentacji (można zmieniać w zależności od konwencji)
+        alpha = 0x02
+        log_table = [0] * 256
+        antilog_table = [0] * 512
+        x = 1
+        for i in range(255):
+            antilog_table[i] = x
+            log_table[x] = i
+            x = gf_mul(x, alpha, prim=prim)
+        for i in range(255, 512):
+            antilog_table[i] = antilog_table[i - 255]
+        return log_table, antilog_table
+
+    def gf_pow(self, alpha_power):
+        """
+        Zwraca element pola odpowiadający α^(alpha_power).
+        Ponieważ α^255 = 1 i cykl się powtarza.
+        """
+        return self.antilog_table[alpha_power % 255]
+
+    # obliczenie syndromów (podstawiamy alfa w x)
+    def poly_evaluate(self, poly, alpha_power):
+        value = 0
+        for i, coef in enumerate(poly):
+            if coef == 1:
+                power = (len(poly) - 1 - i) * alpha_power % 255
+                value ^= self.gf_pow(power)
+        return int_to_poly(value,8)[::-1]
+
 
     def multiply_polynomials(self, poly1, poly2):
         result = [0] * (len(poly1) + len(poly2) - 1)
@@ -172,6 +231,21 @@ def decoder_test(bch, errors_amount, error_generator, error_type=error_flip):
     if message != original_message:
         raise MessagesNotMatchError("Odzyskana wiadomość nie zgadza się z oryginalną.")
 
+
+def syndrome_test(bch, errors_amount, error_generator, error_type=error_flip):
+    message = [random.randint(0, 1) for _ in range(k)]
+    encoded_message = bch.encode(message)
+    if not bch.validate_codeword(encoded_message):
+        raise EncodingError("Niepoprawny kod.")
+
+    received_message = encoded_message[:]
+    errors_array = error_generator(n, errors_amount)
+    for error_position in errors_array:
+        error_type(received_message, error_position)
+
+    syndromes = [bch.poly_evaluate(received_message, i) for i in range(1, 2 * bch.t)]
+    return syndromes
+
 def write_to_excel(data, file_name):
     df = pd.DataFrame.from_dict(data)
     df = df.transpose()
@@ -271,29 +345,33 @@ if __name__ == '__main__':
 
     bch_coder = BCHCoder(n, k, t)
 
-    test_info = {}
-    for test_case in test_suite:
-        for error_count, test_amount in test_case['error_config'].items():
-            test_info[f"{test_case['name']} errors: {error_count}"] = {
-                'test_case': test_case['name'],
-                'errors_amount': error_count,
-                'test_amount': test_amount,
-                'success': 0,
-                'unfixable': 0,
-                'fixed_incorrectly': 0,
-                'encoding_error': 0,
-            }
-            for _ in progressbar(range(test_amount), prefix=f"{test_case['name']} amount: {error_count} "):
-                try:
-                    decoder_test(bch_coder, error_count, test_case['error_generator'], test_case['error_type'])
-                except MessagesNotMatchError:
-                    test_info[f"{test_case['name']} errors: {error_count}"]['fixed_incorrectly'] += 1
-                except EncodingError:
-                    test_info[f"{test_case['name']} errors: {error_count}"]['encoding_error'] += 1
-                except MessageUnfixableError:
-                    test_info[f"{test_case['name']} errors: {error_count}"]['unfixable'] += 1
-                else:
-                    test_info[f"{test_case['name']} errors: {error_count}"]['success'] += 1
-
-    write_to_excel(test_info, "test_info_nowe.xlsx")
+    # syndromy
+    print(syndrome_test(bch_coder, 0, error_generator_random, error_flip))
+    print(syndrome_test(bch_coder, 1, error_generator_random, error_flip))
+    print('1')
+    # test_info = {}
+    # for test_case in test_suite:
+    #     for error_count, test_amount in test_case['error_config'].items():
+    #         test_info[f"{test_case['name']} errors: {error_count}"] = {
+    #             'test_case': test_case['name'],
+    #             'errors_amount': error_count,
+    #             'test_amount': test_amount,
+    #             'success': 0,
+    #             'unfixable': 0,
+    #             'fixed_incorrectly': 0,
+    #             'encoding_error': 0,
+    #         }
+    #         for _ in progressbar(range(test_amount), prefix=f"{test_case['name']} amount: {error_count} "):
+    #             try:
+    #                 decoder_test(bch_coder, error_count, test_case['error_generator'], test_case['error_type'])
+    #             except MessagesNotMatchError:
+    #                 test_info[f"{test_case['name']} errors: {error_count}"]['fixed_incorrectly'] += 1
+    #             except EncodingError:
+    #                 test_info[f"{test_case['name']} errors: {error_count}"]['encoding_error'] += 1
+    #             except MessageUnfixableError:
+    #                 test_info[f"{test_case['name']} errors: {error_count}"]['unfixable'] += 1
+    #             else:
+    #                 test_info[f"{test_case['name']} errors: {error_count}"]['success'] += 1
+    #
+    # write_to_excel(test_info, "test_info_nowe.xlsx")
     # print(json.dumps(list(test_info.items()), indent=4))
