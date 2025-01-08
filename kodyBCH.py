@@ -38,6 +38,9 @@ def gf_mul(x, y, prim=0x11d, field_size=8):
         y >>= 1
     return r
 
+def gf_add(a, b):
+    return a ^ b
+
 class BCHCoder:
     minimal_polynomials = {
         1: [1, 0, 0, 0, 1, 1, 1, 0, 1],  # m1
@@ -83,6 +86,26 @@ class BCHCoder:
         """
         return self.antilog_table[alpha_power % 255]
 
+    def gf_inv(self, a):
+        """
+        Zwraca element multiplikatywnie odwrotny do 'a' w GF(2^8),
+        używając tabel logarytmów i antilogarytmów.
+        """
+        if a == 0:
+            raise ZeroDivisionError("Нет обратного к 0 в GF(2^8).")
+
+        # Obliczamy indeks w tabeli logarytmów
+        a_log = self.log_table[a]  # log(a)
+
+        # Wzór a^-1 = α^(255 - log(a)), ale trzeba wziąć modulo 255
+        exponent = 255 - a_log
+
+        # Jeśli wykładnik == 255, to wykładnik % 255 = 0
+        exponent %= 255
+
+        # Zwracamy odpowiedni element z tabeli antilogarytmów
+        return self.antilog_table[exponent]
+
     # obliczenie syndromów (podstawiamy alfa w x)
     def poly_evaluate(self, poly, alpha_power):
         value = 0
@@ -90,8 +113,107 @@ class BCHCoder:
             if coef == 1:
                 power = (len(poly) - 1 - i) * alpha_power % 255
                 value ^= self.gf_pow(power)
-        return int_to_poly(value,8)[::-1]
+        return value
 
+    def calculate_syndromes(self, received_codeword):
+        syndromes = []
+        for i in range(1, 2 * self.t):
+            syndromes.append(self.poly_evaluate(received_codeword, i))
+        return syndromes
+
+    def berlekamp_massey(self, syndromes):
+        """
+        syndromy: lista liczb całkowitych (0..255), długości 2t (na przykład, 2*11=22),
+        każdy element to wartość syndromu S_i w GF(2^8).
+        Zwraca (Lambda, L), gdzie Lambda to lista współczynników wielomianu
+        lokatorów błędów (od najmniejszego do największego), L to jego stopień.
+        """
+        L = 0
+        m = 1
+        b = 1  # ostatnia niezerowa niespójność
+        Lambda = [1] + [0] * (len(syndromes))  # Wielomian Lambda(x), długość z zapasem
+        B = [1] + [0] * (len(syndromes))  # Pomocniczy wielomian B(x)
+
+        for i in range(len(syndromes)):
+            # 1) Obliczamy discrepancy = S_i + sum_{j=1..L} (Lambda_j * S_{i-j})
+            # W GF(2^8) dodawanie = XOR
+            delta = syndromes[i]
+            for j in range(1, L + 1):
+                if Lambda[j] != 0 and (i - j) >= 0:
+                    delta = gf_add(delta, gf_mul(Lambda[j], syndromes[i - j]))
+
+            # 2) Jeśli discrepancy == 0, nic nie robimy, po prostu m++
+            if delta != 0:
+                # 3) Tymczasowa kopia Lambda, aby zaktualizować B w razie potrzeby
+                T = Lambda[:]
+
+                # Lambda = Lambda + delta/b * x^m * B
+                inv_b = self.gf_inv(b)  # b^-1
+                factor = gf_mul(delta, inv_b)
+                # Przesuwamy B(x) o m pozycji
+                for k in range(len(syndromes) - m):
+                    if B[k] != 0:
+                        # Dodajemy factor * B[k] na pozycję k+m
+                        Lambda[k + m] = gf_add(Lambda[k + m],
+                                               gf_mul(factor, B[k]))
+
+                if 2 * L <= i:
+                    L_new = i + 1 - L
+                    L = L_new
+                    B = T
+                    b = delta
+                    m = 1
+                else:
+                    m += 1
+            else:
+                m += 1
+
+        # Teraz mamy wielomian Lambda o wymaganej długości L+1
+        # Przycinamy "ogon" niepotrzebnych zer
+        Lambda = Lambda[:L + 1]
+        return Lambda, L
+
+    def chien_search(self, Lambda):
+        """
+        Szukamy korzeni wielomianu lokatorów błędów Lambda(x) w GF(2^8).
+        Lambda: lista współczynników (Lambda[0], Lambda[1], ..., Lambda[L])
+        gdzie Lambda[j] jest elementem GF(2^8) w zakresie [0..255].
+        Zwraca listę indeksów pozycji, w których wykryto błąd.
+        """
+        # stopień wielomianu
+        error_positions = []
+
+        # Przeglądamy i od 0 do n-1 (n=255 dla BCH(255, k))
+        for i in range(self.n):
+            # Obliczamy Lambda(alpha^i):
+            # val = sum_{j=0..L} [ Lambda[j] * alpha^(i*j) ]
+            val = 0
+            for j in range(len(Lambda)):
+                if Lambda[j] != 0:  # jeśli 0, mnożenie i tak da 0
+                # (i*j) % 255 ponieważ alpha^255 = 1
+                    power = (i * j) % 255
+                    val = gf_add(val, gf_mul(Lambda[j], self.gf_pow(power)))
+
+            if val == 0:
+                error_positions.append(i-1)
+
+        return error_positions
+
+    def decode_with_full_correction(self, received_codeword):
+        syndromes = self.calculate_syndromes(received_codeword)
+        Lambda, L = self.berlekamp_massey(syndromes)
+        error_positions = self.chien_search(Lambda)
+        if len(error_positions) > self.t:
+            raise MessageUnfixableError("Błędy są niekorygowalne.")
+        corrected_codeword = received_codeword[:]
+        for error_position in error_positions:
+            corrected_codeword[error_position] ^= 1
+        syndromes = self.calculate_syndromes(corrected_codeword)
+        if any(syndromes):
+            raise MessageUnfixableError("Błędy są niekorygowalne.")
+        # Wyciągnij pierwsze k bitów jako oryginalną wiadomość
+        original_message = corrected_codeword[:self.k]
+        return original_message
 
     def multiply_polynomials(self, poly1, poly2):
         result = [0] * (len(poly1) + len(poly2) - 1)
@@ -246,6 +368,62 @@ def syndrome_test(bch, errors_amount, error_generator, error_type=error_flip):
     syndromes = [bch.poly_evaluate(received_message, i) for i in range(1, 2 * bch.t)]
     return syndromes
 
+
+def bc_test(bch, errors_amount, error_generator, error_type=error_flip):
+    message = [random.randint(0, 1) for _ in range(k)]
+    encoded_message = bch.encode(message)
+    if not bch.validate_codeword(encoded_message):
+        raise EncodingError("Niepoprawny kod.")
+
+    received_message = encoded_message[:]
+    errors_array = error_generator(n, errors_amount)
+    for error_position in errors_array:
+        error_type(received_message, error_position)
+
+    syndromes_bits = [bch.poly_evaluate(received_message, i) for i in range(1, 2 * bch.t)]
+    syndromes = [poly_to_int(syn_bits[::-1]) for syn_bits in syndromes_bits]
+    Lambda, L = bch.berlekamp_massey(syndromes)
+    return Lambda, L
+
+
+def chein_test(bch, errors_amount, error_generator, error_type=error_flip):
+    message = [random.randint(0, 1) for _ in range(k)]
+    encoded_message = bch.encode(message)
+    if not bch.validate_codeword(encoded_message):
+        raise EncodingError("Niepoprawny kod.")
+
+    received_message = encoded_message[:]
+    errors_array = error_generator(n, errors_amount)
+    for error_position in errors_array:
+        error_type(received_message, error_position)
+
+    syndromes_bits = [bch.poly_evaluate(received_message, i) for i in range(1, 2 * bch.t)]
+    syndromes = [poly_to_int(syn_bits[::-1]) for syn_bits in syndromes_bits]
+    Lambda, L = bch.berlekamp_massey(syndromes)
+    error_positions = bch.chien_search(Lambda)
+    return error_positions
+
+
+def full_decode_test(bch, errors_amount, error_generator, error_type=error_flip):
+    message = [random.randint(0, 1) for _ in range(k)]
+    encoded_message = bch.encode(message)
+    if not bch.validate_codeword(encoded_message):
+        raise EncodingError("Niepoprawny kod.")
+
+    received_message = encoded_message[:]
+    errors_array = error_generator(n, errors_amount)
+    for error_position in errors_array:
+        error_type(received_message, error_position)
+
+    decoded_message = bch.decode_with_full_correction(received_message)
+    if message != decoded_message:
+        for i, elem in enumerate(decoded_message):
+            if elem != message[i]:
+                print(f"Error at position {i}")
+        raise MessagesNotMatchError("Odzyskana wiadomość nie zgadza się z oryginalną.")
+    return decoded_message
+
+
 def write_to_excel(data, file_name):
     df = pd.DataFrame.from_dict(data)
     df = df.transpose()
@@ -260,17 +438,17 @@ test_suite = [
         'error_type': error_flip,
         'error_config': {
             1: 255,
-            2:600,
+            2: 600,
             3: 900,
             4: 600,
-            5:  400,
-            6:  600,
+            5: 400,
+            6: 600,
             7: 300,
             8: 300,
             9: 300,
             10: 300,
             11: 300,
-            12:  300,
+            12: 300,
             30: 300,
         }
     },
@@ -282,17 +460,17 @@ test_suite = [
         'error_config': {
             1: 255,
             2: 254,
-            3:  253,
-            4:  252,
-            5:  251,
-            6:  250,
-            7:  249,
-            8:  248,
-            9:  247,
-            10:  246,
-            11:  245,
-            12:  244,
-            30:  226
+            3: 253,
+            4: 252,
+            5: 251,
+            6: 250,
+            7: 249,
+            8: 248,
+            9: 247,
+            10: 246,
+            11: 245,
+            12: 244,
+            30: 226
         }
     },
 
@@ -346,9 +524,15 @@ if __name__ == '__main__':
     bch_coder = BCHCoder(n, k, t)
 
     # syndromy
-    print(syndrome_test(bch_coder, 0, error_generator_random, error_flip))
-    print(syndrome_test(bch_coder, 1, error_generator_random, error_flip))
-    print('1')
+    print(full_decode_test(bch_coder, 0, error_generator_random, error_flip))
+    print(full_decode_test(bch_coder, 1, error_generator_random, error_flip))
+    print(full_decode_test(bch_coder, 2, error_generator_random, error_flip))
+    print(full_decode_test(bch_coder, 11, error_generator_random, error_flip))
+    try:
+        print(full_decode_test(bch_coder, 16, error_generator_random, error_flip))
+    except MessageUnfixableError:
+        print("Message is unfixable")
+
     # test_info = {}
     # for test_case in test_suite:
     #     for error_count, test_amount in test_case['error_config'].items():
