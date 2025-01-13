@@ -95,7 +95,7 @@ class BCHCoder:
         używając tabel logarytmów i antilogarytmów.
         """
         if a == 0:
-            raise ZeroDivisionError("Нет обратного к 0 в GF(2^8).")
+            raise ZeroDivisionError("Nie ma odwrotnego do 0 GF(2^8).")
 
         # Obliczamy indeks w tabeli logarytmów
         a_log = self.log_table[a]  # log(a)
