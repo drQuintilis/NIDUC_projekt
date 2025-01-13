@@ -13,6 +13,9 @@ class MessagesNotMatchError(Exception):
 class MessageUnfixableError(Exception):
     pass
 
+def highlight_errors(codeword, error_positions):
+    return ''.join(f"\033[91m{bit}\033[0m" if i in error_positions else str(bit) for i, bit in enumerate(codeword))
+
 def poly_to_int(poly):
     """Konwertuje wielomian z listy na liczbę całkowitą."""
     return int(''.join(map(str, poly)), 2)
@@ -262,6 +265,18 @@ class BCHCoder:
             if i < len(codeword) - 1:
                 colored_codeword += ', '  # Dodanie przecinka między bitami
         return colored_codeword
+
+    def display_results(self, original_message, encoded_message, received_message, corrected_simple, corrected_full,
+                        success_simple, success_full, error_positions):
+        print("\n========== WYNIKI TESTU ==========")
+        print("Oryginalna wiadomość:         ", ''.join(map(str, original_message)))
+        print("Wielomian generujący:         ", ''.join(map(str, self.generator_polynomial)))
+        print("Zakodowane słowo kodowe:      ", ''.join(map(str, encoded_message)))
+        print("Słowo z błędami:              ", highlight_errors(received_message, error_positions))
+        print("Prosta korekcja:              ", ''.join(map(str, corrected_simple)))
+        print("Czy dekoder uproszczony zadziałał?", success_simple)
+        print("Pełna korekcja:               ", ''.join(map(str, corrected_full)))
+        print("Czy dekoder pełny zadziałał?", success_full)
 
     def decode_with_error_correction(self, received_codeword):
         shifts = 0
@@ -520,18 +535,33 @@ if __name__ == '__main__':
     n = 255
     k = 171
     t = 11
-
+    errors_amount = 4
     bch_coder = BCHCoder(n, k, t)
 
-    # syndromy
-    print(full_decode_test(bch_coder, 0, error_generator_random, error_flip))
-    print(full_decode_test(bch_coder, 1, error_generator_random, error_flip))
-    print(full_decode_test(bch_coder, 2, error_generator_random, error_flip))
-    print(full_decode_test(bch_coder, 11, error_generator_random, error_flip))
+    original_message = [random.randint(0, 1) for _ in range(k)]
+    encoded_message = bch_coder.encode(original_message)
+    received_message = encoded_message[:]
+
+    error_positions = error_generator_random(n, errors_amount)
+    for pos in error_positions:
+        error_flip(received_message, pos)
+
     try:
-        print(full_decode_test(bch_coder, 16, error_generator_random, error_flip))
+        corrected_simple = bch_coder.decode_with_error_correction(received_message)
+        success_simple = corrected_simple[:k] == original_message
     except MessageUnfixableError:
-        print("Message is unfixable")
+        corrected_simple = received_message
+        success_simple = False
+
+    try:
+        corrected_full = bch_coder.decode_with_full_correction(received_message)
+        success_full = corrected_full == original_message
+    except MessageUnfixableError:
+        corrected_full = received_message
+        success_full = False
+
+    bch_coder.display_results(original_message, encoded_message, received_message, corrected_simple, corrected_full,
+                              success_simple, success_full, error_positions)
 
     # test_info = {}
     # for test_case in test_suite:
