@@ -129,7 +129,7 @@ class BCHCoder:
         syndromy: lista liczb całkowitych (0..255), długości 2t (na przykład, 2*11=22),
         każdy element to wartość syndromu S_i w GF(2^8).
         Zwraca (Lambda, L), gdzie Lambda to lista współczynników wielomianu
-        lokatorów błędów (od najmniejszego do największego), L to jego stopień.
+        lokalizującego błędy (od najmniejszego do największego), L to jego stopień.
         """
         L = 0
         m = 1
@@ -178,7 +178,7 @@ class BCHCoder:
 
     def chien_search(self, Lambda):
         """
-        Szukamy korzeni wielomianu lokatorów błędów Lambda(x) w GF(2^8).
+        Szukamy pierwiastki wielomianu lokalizującego błędy Lambda(x) w GF(2^8).
         Lambda: lista współczynników (Lambda[0], Lambda[1], ..., Lambda[L])
         gdzie Lambda[j] jest elementem GF(2^8) w zakresie [0..255].
         Zwraca listę indeksów pozycji, w których wykryto błąd.
