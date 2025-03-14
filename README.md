@@ -1,4 +1,4 @@
-**Project Overview**
+# Project Overview (BCH codes)
 
 This repository demonstrates how BCH codes (Bose–Chaudhuri–Hocquenghem) can effectively detect and correct multiple errors in a codeword of length n = 255 bits. 
 The project was implemented under the subject "reliability and diagnostics of digital systems". 
